@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <dirent.h>
+
+
+
+int open_dir (char dir_name) {
+    struct dirent *dir_entry;  // Pointer for directory entry
+
+    // opendir() returns a pointer of DIR type. 
+    DIR *dir = opendir(".");
+
+    if (dir == NULL)  // opendir returns NULL if couldn't open directory
+    {
+        printf("Could not open current directory" );
+        return 0;
+    }
+    
+    // Refer https://pubs.opengroup.org/onlinepubs/7990989775/xsh/readdir.html
+    // for readdir()
+    while ((dir_entry = readdir(dir)) != NULL)
+            printf("%s\n", dir_entry->d_name);
+
+}
+
+/*
+void print_dir () {
+    // Refer https://pubs.opengroup.org/onlinepubs/7990989775/xsh/readdir.html
+    // for readdir()
+    while ((dir_entry = readdir(dir)) != NULL)
+            printf("%s\n", dir_entry->d_name);
+
+}
+*/
+
+char *arg_parser (int argc, char *argv[]) {
+    if (argc > 1) {
+        return argv[2];   
+    }
+
+    else {
+        fputs("Not enough arguments!", stdout);
+    }
+}
+
+int main (int argc, char *argv[]) {
+    char dir_name = arg_parser(argc, argv);
+    
+    open_dir (dir_name);
+
+    closedir(dir); 
+    return 0;
+}
