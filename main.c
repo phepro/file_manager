@@ -9,6 +9,7 @@
 char **files_in_dir;
 int file_count = 0;
 
+//this shit dont work
 
 char path[100];
 char empty_path[100];
