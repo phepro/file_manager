@@ -6,10 +6,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-char **files_in_dir;
-int file_count = 0;
-
-//this shit dont work
+struct dirent *dir_entry;
+char files_in_dir [15][15];
 
 char path[100];
 char empty_path[100];
@@ -18,33 +16,21 @@ char new_path[100];
 
 void init_files (DIR *dir) {
     int i = 0;
-    
-
-    struct dirent *dir_entry;
 
     if (dir == NULL) {
         printf("Cant open dir: %s\n", path);
     }
-    
-
 
     while ((dir_entry = readdir(dir)) != NULL) {
         //char current_file[15] = dir_entry->d_name;
+
         //files_in_dir[i] = current_file;
-        //strcpy(files_in_dir[i], dir_entry->d_name);
-        //i++;
-        //
-        file_count++;
-    }   
-    closedir(dir);
-    
-    dir = opendir(path);
-    files_in_dir = (char**)malloc(sizeof(char*)*file_count);
-    while ((dir_entry = readdir(dir)) != NULL) {
+
         strcpy(files_in_dir[i], dir_entry->d_name);
-        i++;   
+
+        i++;
     }
-    closedir(dir);
+
 }
 
 void print_files () {
@@ -56,18 +42,26 @@ void print_files () {
 void print_current_dir () {
     char cwd[PATH_MAX];
 
-    if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        printw("Current dir.: %s\n", cwd);
+    if (sizeof(path) == sizeof(cwd)) {
+        if (getcwd(cwd, sizeof(cwd)) != NULL) {
+            printw("Current dir.: %s\n", cwd);
+        }
     }
+
+    else if (sizeof(path) != sizeof(cwd)) {
+        printw("Current dir.: %s\n", path);
+    }
+
 
     else {
         printw("Current dir.: (getcwd failed)\n");
     }
 }
 
-void print_content_to_screen (char path[100];) { 
+void print_content_to_screen (char path[100];) {
+
     DIR *dir = opendir(path);
-    
+
     print_current_dir();
 
     init_files(dir);
@@ -91,13 +85,15 @@ void path_up () {
         path_temp[i] = path[i];
     }
 
+    path_temp[x] = '\0';
+
     strcpy(path, path_temp);
 }
 
 int main () {
     int ch;
     char cwd[PATH_MAX];
-    
+
     if (strlen(path) == 0) {
         if (getcwd(cwd, sizeof(cwd)) != NULL) {
             strcpy(start_path, cwd);
@@ -120,19 +116,19 @@ int main () {
 
         ch = getch();
 
-        if (ch == KEY_F(1)) {
+        if (ch == 'q' || ch == 'Q') {
             break;
         }
 
-        else if (ch == KEY_F(2)) {
+        else if (ch == 'a' || ch == 'A') {
             path_up();
         }
 
         refresh();
-        getch();
+        //getch();
     }
 
     endwin();
 
-    return 0;    
+    return 0;
 }
